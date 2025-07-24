@@ -5,81 +5,100 @@ from textblob import TextBlob
 
 load_dotenv()  # Load environment variables from .env
 
-# Global state for OpenAI availability
-_openai_available = False
-_openai_client = None
+# Global state for Gemini availability
+_gemini_available = False
+_gemini_client = None
 _quota_exceeded = False
 
-def _initialize_openai():
-    """Initialize OpenAI client if possible"""
-    global _openai_available, _openai_client, _quota_exceeded
+def _initialize_gemini():
+    """Initialize Gemini client if possible"""
+    global _gemini_available, _gemini_client, _quota_exceeded
     
     if _quota_exceeded:
         return False
         
     try:
-        from openai import OpenAI
-        api_key = os.getenv("OPENAI_API_KEY")
+        import google.generativeai as genai
+        api_key = os.getenv("GEMINI_API_KEY")
         if api_key and api_key.strip() and not api_key.startswith("your_"):
-            _openai_client = OpenAI(api_key=api_key)
-            _openai_available = True
-            print("✅ OpenAI configured and ready")
+            genai.configure(api_key=api_key)
+            _gemini_client = genai.GenerativeModel('gemini-1.5-flash')
+            _gemini_available = True
+            print("✅ Google Gemini configured and ready")
             return True
         else:
-            print("ℹ️ OpenAI API key not found or invalid")
+            print("ℹ️ Gemini API key not found or invalid")
             return False
     except ImportError:
-        print("ℹ️ OpenAI library not installed")
+        print("ℹ️ Google Generative AI library not installed")
         return False
     except Exception as e:
-        print(f"⚠️ OpenAI setup failed: {e}")
+        print(f"⚠️ Gemini setup failed: {e}")
         return False
 
 # Initialize on import
-_initialize_openai()
+_initialize_gemini()
 
 def summarize_chunk(chunk):
     """
-    Generate a short chapter title using OpenAI or free fallback
+    Generate a short chapter title using Gemini or free fallback
     """
-    global _openai_available, _quota_exceeded
+    global _gemini_available, _quota_exceeded
     
-    # Try OpenAI if available and not quota exceeded
-    if _openai_available and not _quota_exceeded and _openai_client:
+    # Try Gemini if available and not quota exceeded
+    if _gemini_available and not _quota_exceeded and _gemini_client:
         try:
-            return _summarize_chunk_openai(chunk)
+            return _summarize_chunk_gemini(chunk)
         except Exception as e:
             error_str = str(e).lower()
-            if "quota" in error_str or "429" in error_str:
-                print("⚠️ OpenAI quota exceeded, switching to free mode")
+            if "quota" in error_str or "429" in error_str or "limit" in error_str:
+                print("⚠️ Gemini quota exceeded, switching to free mode")
                 _quota_exceeded = True
             else:
-                print(f"⚠️ OpenAI error: {str(e)[:100]}...")
+                print(f"⚠️ Gemini error: {str(e)[:100]}...")
             
             return _summarize_chunk_free(chunk)
     else:
         return _summarize_chunk_free(chunk)
 
-def _summarize_chunk_openai(chunk):
-    """Use OpenAI to generate a short chapter title"""
-    if not _openai_client:
-        raise Exception("OpenAI client not available")
+def _summarize_chunk_gemini(chunk):
+    """Use Google Gemini to generate a short chapter title"""
+    if not _gemini_client:
+        raise Exception("Gemini client not available")
     
-    prompt = f"""Generate a concise, engaging chapter title (max 6 words) for this video transcript segment. 
-    Make it descriptive and interesting. Add relevant emoji if appropriate.
+    prompt = f"""Generate a concise, engaging chapter title (maximum 6 words) for this video transcript segment. 
+    Make it descriptive and interesting. Add a relevant emoji at the beginning if appropriate.
     
-    Text: {chunk[:500]}"""
+    Rules:
+    - Maximum 6 words
+    - Be specific and descriptive
+    - Use action words when possible
+    - Add emoji if it enhances understanding
+    - Make it sound like a YouTube chapter
     
-    response = _openai_client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=20,
-        temperature=0.7
-    )
+    Transcript: {chunk[:500]}
     
-    title = response.choices[0].message.content.strip()
-    title = title.strip('"').strip("'")  # Remove quotes
-    return title
+    Chapter title:"""
+    
+    try:
+        response = _gemini_client.generate_content(prompt)
+        title = response.text.strip()
+        
+        # Clean up the response
+        title = title.replace('"', '').replace("'", "").strip()
+        
+        # Remove any extra text after the title
+        if '\n' in title:
+            title = title.split('\n')[0]
+        
+        # Ensure it's not too long
+        if len(title) > 50:
+            title = title[:47] + "..."
+            
+        return title
+        
+    except Exception as e:
+        raise Exception(f"Gemini generation failed: {e}")
 
 def _summarize_chunk_free(chunk):
     """Generate chapter title using free NLP methods (no API required)"""
@@ -186,10 +205,10 @@ def _summarize_chunk_free(chunk):
 
 def get_summarization_status():
     """Return current summarization method status"""
-    global _openai_available, _quota_exceeded
+    global _gemini_available, _quota_exceeded
     
-    if _openai_available and not _quota_exceeded and _openai_client:
-        return "premium", "🚀 AI-Powered Titles"
+    if _gemini_available and not _quota_exceeded and _gemini_client:
+        return "premium", "🤖 AI-Powered Titles (Gemini)"
     else:
         return "free", "📝 Smart Keyword Titles"
 

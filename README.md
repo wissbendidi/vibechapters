@@ -1,23 +1,23 @@
 # 📺 VibeChapters Pro
 
-> AI-powered smart video chapters + emotion-based highlight generation from YouTube videos
+> AI-powered smart video chapters from YouTube videos using **Google Gemini** (FREE!)
 
-A full-stack ML tool that automatically generates intelligent chapter titles and timestamps from any YouTube video, with optional AI enhancement and emotion analysis.
-By [Wissal Bendidi]
+Generate intelligent chapter titles and timestamps from any YouTube video with optional AI enhancement using Google's free Gemini API.
 
 ## ✨ Features
 
 ### 🎯 Core Features
 - **Smart Chapter Generation**: Auto-generate meaningful chapter titles with timestamps
 - **YouTube Integration**: Direct integration with YouTube transcript API
-- **Dual Mode Operation**: Works with or without OpenAI API
+- **Dual Mode Operation**: Works with or without Google Gemini API
 - **Interactive UI**: Beautiful Streamlit interface with progress tracking
 - **Timestamp Links**: Direct links to specific video moments
 
-### 🚀 Premium Features (with OpenAI API)
-- **AI-Generated Titles**: More creative and contextual chapter names
+### 🚀 Premium Features (with FREE Gemini API)
+- **AI-Generated Titles**: More creative and contextual chapter names using Google Gemini
 - **Better Context Understanding**: Advanced natural language processing
 - **Enhanced Descriptions**: More engaging and descriptive titles
+- **Completely FREE**: No credit card required, generous daily limits!
 
 ### 🆓 Free Features (no API required)
 - **Keyword Extraction**: Smart keyword-based chapter generation
@@ -25,40 +25,36 @@ By [Wissal Bendidi]
 - **Chapter Organization**: Logical content segmentation
 - **Analytics Dashboard**: Video statistics and insights
 
-## 🛠️ Installation
+## 🚀 Quick Start
 
-### Prerequisites
-- Python 3.8+
-- pip
+### 1. Clone the repository
+```bash
+git clone https://github.com/yourusername/vibechapters.git
+cd vibechapters
+```
 
-### Quick Start
+### 2. Install dependencies
+```bash
+pip install -r requirements.txt
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/vibechapters.git
-   cd vibechapters
-   ```
+### 3. Run the app
+```bash
+streamlit run app.py
+```
 
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 4. Optional: Enable FREE Premium Features 🎉
 
-3. **Run the app**
-   ```bash
-   streamlit run app.py
-   ```
-
-### 🔧 Optional: Enable Premium Features
-
-1. **Get OpenAI API Key**
-   - Visit [OpenAI API Keys](https://platform.openai.com/api-keys)
-   - Create a new secret key
+1. **Get FREE Gemini API Key**
+   - Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
+   - Sign in with Google account
+   - Click "Create API Key"
+   - Copy your free API key
 
 2. **Configure Environment**
    ```bash
-   # Create .env file
-   echo "OPENAI_API_KEY=your_api_key_here" > .env
+   cp .env.example .env
+   # Edit .env and add: GEMINI_API_KEY=your_api_key_here
    ```
 
 3. **Restart the app**
@@ -66,52 +62,36 @@ By [Wissal Bendidi]
    streamlit run app.py
    ```
 
-## 📁 Project Structure
-
-```
-vibechapters/
-├── app.py                 # Main Streamlit application
-├── get_transcript.py      # YouTube transcript extraction with fallbacks
-├── split_text.py          # Text chunking logic
-├── summarize.py           # Chapter title generation (OpenAI + free fallback)
-├── emotion_detector.py    # Emotion analysis (optional)
-├── requirements.txt       # Python dependencies
-├── .env.example          # Environment variables template
-└── README.md             # This file
-```
-
 ## 🎮 Usage
 
-### Basic Usage
-1. Open the app in your browser
-2. Paste a YouTube URL
-3. Click "Generate Chapters"
-4. View your smart chapters with timestamps!
+### Demo Mode (Test Immediately)
+1. Enable "Demo Mode" in the sidebar
+2. Click "Generate Chapters"
+3. See sample AI-generated chapters instantly!
 
-### Demo Mode
-- Enable "Demo Mode" in the sidebar to test with sample content
-- Perfect for testing the app without needing a YouTube video
+### Real YouTube Videos
+1. Paste any YouTube URL
+2. Click "Generate Chapters"
+3. Get smart chapters with clickable timestamps
+4. Enjoy FREE AI-powered titles with Gemini!
 
-### Configuration Options
-- **Words per chapter**: Adjust chapter length (50-200 words)
-- **Analytics**: Enable detailed video statistics
-- **Preview**: Show chapter content previews
+## 🆓 Why Gemini?
 
-## 🔧 API Configuration
+**Google Gemini is completely FREE** with generous limits:
+- ✅ **15 requests per minute**
+- ✅ **1,500 requests per day**
+- ✅ **No credit card required**
+- ✅ **No billing setup needed**
+- ✅ **Better than many paid alternatives**
 
-### OpenAI Setup (Optional)
-```bash
-# .env file
-OPENAI_API_KEY=sk-proj-your-key-here
-```
+Compare this to OpenAI which requires:
+- ❌ Credit card for API access
+- ❌ Pay per token usage
+- ❌ Can get expensive quickly
 
-### Fallback Behavior
-- **With API**: Uses GPT-4o-mini for intelligent chapter titles
-- **Without API**: Uses TextBlob + keyword extraction for free operation
-- **Rate Limited**: Automatically falls back to free method
+## 🛠️ Technical Details
 
-## 📊 How It Works
-
+### How It Works
 1. **Transcript Extraction**: 
    - YouTube Transcript API (primary)
    - yt-dlp subtitle extraction (fallback)
@@ -122,13 +102,32 @@ OPENAI_API_KEY=sk-proj-your-key-here
    - Context-aware segment boundaries
 
 3. **Chapter Generation**:
-   - **Premium**: OpenAI GPT-4o-mini with custom prompts
+   - **Premium**: Google Gemini 1.5 Flash with custom prompts
    - **Free**: Keyword extraction + sentiment analysis + pattern matching
 
 4. **UI Enhancement**:
    - Progress tracking
    - Interactive analytics
    - Direct YouTube timestamp links
+
+### Fallback System
+- **With Gemini API**: Uses AI for creative, contextual titles
+- **Without API**: Uses smart keyword extraction (still very good!)
+- **Rate Limited**: Automatically falls back to free method
+- **Always Works**: Never completely fails
+
+## 📁 Project Structure
+
+```
+vibechapters/
+├── app.py                 # Main Streamlit application
+├── get_transcript.py      # YouTube transcript extraction with fallbacks
+├── split_text.py          # Text chunking logic
+├── summarize.py           # Chapter title generation (Gemini + free fallback)
+├── requirements.txt       # Python dependencies
+├── .env.example          # Environment variables template
+└── README.md             # This file
+```
 
 ## 🎯 Supported Video Types
 
@@ -152,9 +151,9 @@ OPENAI_API_KEY=sk-proj-your-key-here
 - Wait 10-15 minutes and try again
 - App automatically retries with delays
 
-**"Invalid API key"**
+**"Gemini API error"**
 - Check your `.env` file configuration
-- Verify API key at OpenAI platform
+- Verify API key at [Google AI Studio](https://aistudio.google.com/app/apikey)
 - App works without API key in free mode
 
 ### Debug Mode
@@ -165,14 +164,6 @@ python get_transcript.py
 # Test summarization
 python summarize.py
 ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## 📋 Requirements
 
@@ -189,10 +180,17 @@ requests>=2.32.4
 
 ### Optional Dependencies
 ```
-openai>=1.97.1          # For premium AI features
-yt-dlp>=2024.12.13      # Enhanced transcript extraction
-transformers>=4.44.2    # Advanced emotion analysis
+google-generativeai>=0.8.3  # For FREE premium AI features
+yt-dlp>=2024.12.13          # Enhanced transcript extraction
 ```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
@@ -201,21 +199,27 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - [Streamlit](https://streamlit.io/) for the amazing web framework
-- [OpenAI](https://openai.com/) for GPT API
+- [Google Gemini](https://ai.google.dev/) for FREE AI capabilities
 - [YouTube Transcript API](https://github.com/jdepoix/youtube-transcript-api) for transcript extraction
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) for subtitle fallback
 
 ## 🔮 Roadmap
 
-- [ ] Audio-based emotion detection
-- [ ] Video frame analysis for visual cues
-- [ ] Export chapters to various formats
 - [ ] Batch processing multiple videos
-- [ ] Chapter thumbnail generation
+- [ ] Export chapters to various formats (JSON, CSV, SRT)
+- [ ] Video thumbnail generation for chapters
 - [ ] Advanced analytics dashboard
+- [ ] Integration with other video platforms
 
 ---
 
-**Built with ❤️ for content creators and video enthusiasts**
+**Built with ❤️ for content creators using FREE AI** 🚀
 
 [⭐ Star this repo](https://github.com/wissbendidi/vibechapters) if you find it useful!
+
+### 🎉 Get Started Now - It's FREE!
+1. `git clone` this repo
+2. `pip install -r requirements.txt`
+3. `streamlit run app.py`
+4. Get your [FREE Gemini API key](https://aistudio.google.com/app/apikey)
+5. Enjoy unlimited AI-powered chapter generation!

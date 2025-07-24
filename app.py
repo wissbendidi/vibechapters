@@ -21,9 +21,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Check if OpenAI is configured
-api_key = os.getenv("OPENAI_API_KEY")
-OPENAI_CONFIGURED = bool(api_key and api_key.strip() and not api_key.startswith("your_"))
+# Check if Gemini is configured
+api_key = os.getenv("GEMINI_API_KEY")
+GEMINI_CONFIGURED = bool(api_key and api_key.strip() and not api_key.startswith("your_"))
 
 # Custom CSS for better styling
 st.markdown("""
@@ -54,20 +54,29 @@ st.markdown("""
         color: #155724;
     }
     .api-disabled {
-        background-color: #f8d7da;
-        color: #721c24;
+        background-color: #e2f3ff;
+        color: #0c5460;
+    }
+    .gemini-badge {
+        background: linear-gradient(45deg, #4285f4, #34a853);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        margin-left: 0.5rem;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Main title
 st.markdown('<h1 class="main-header">📺 VibeChapters Pro</h1>', unsafe_allow_html=True)
-st.markdown("*AI-powered smart chapters from YouTube videos*")
+st.markdown("*AI-powered smart chapters from YouTube videos* <span class='gemini-badge'>🤖 Powered by Gemini</span>", unsafe_allow_html=True)
 
 # API Status indicator
 method_type, method_desc = get_summarization_status()
 if method_type == "premium":
-    st.markdown('<div class="api-status api-enabled">✅ OpenAI API Configured - Premium Features Available</div>', unsafe_allow_html=True)
+    st.markdown('<div class="api-status api-enabled">✅ Google Gemini API Configured - Premium Features Available (FREE!)</div>', unsafe_allow_html=True)
 else:
     st.markdown('<div class="api-status api-disabled">ℹ️ Using Free Mode - Smart Keyword-Based Chapters</div>', unsafe_allow_html=True)
 
@@ -86,18 +95,23 @@ with st.sidebar:
     
     # API Configuration Section
     st.header("🔧 API Setup")
-    if not OPENAI_CONFIGURED:
+    if not GEMINI_CONFIGURED:
         st.info("ℹ️ Using free mode")
         st.markdown("""
         **To enable premium AI features:**
-        1. Get API key from [OpenAI](https://platform.openai.com/api-keys)
+        1. Get FREE API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
         2. Create `.env` file in project root
-        3. Add: `OPENAI_API_KEY=your_key_here`
+        3. Add: `GEMINI_API_KEY=your_key_here`
         4. Restart the app
+        
+        **🎉 Gemini is FREE** with generous limits:
+        - 15 requests/minute
+        - 1,500 requests/day
+        - No credit card required!
         """)
     else:
-        st.success("✅ OpenAI API configured")
-        st.info("Premium AI chapter generation enabled")
+        st.success("✅ Google Gemini API configured")
+        st.info("🤖 Premium AI chapter generation enabled")
     
     st.markdown("---")
     st.markdown("**✅ Free Features:**")
@@ -106,11 +120,12 @@ with st.sidebar:
     st.markdown("- YouTube timestamp links")
     st.markdown("- Basic analytics")
     
-    if OPENAI_CONFIGURED:
-        st.markdown("**🚀 Premium Features:**")
-        st.markdown("- AI-generated titles")
-        st.markdown("- Better context understanding")
-        st.markdown("- More creative descriptions")
+    if GEMINI_CONFIGURED:
+        st.markdown("**🚀 Premium Features (FREE!):**")
+        st.markdown("- 🤖 AI-generated titles with Gemini")
+        st.markdown("- 🧠 Better context understanding")
+        st.markdown("- ✨ More creative descriptions")
+        st.markdown("- 🆓 Completely FREE with generous limits!")
 
 # Main input
 col1, col2 = st.columns([3, 1])
@@ -171,7 +186,8 @@ if generate_button and (video_url or demo_mode):
                 
                 # Step 3: Generate chapters
                 method = "AI-powered" if method_type == "premium" else "keyword-based"
-                status_text.text(f"🤖 Generating {len(chunks)} {method} chapters...")
+                ai_provider = " (Gemini)" if method_type == "premium" else ""
+                status_text.text(f"🤖 Generating {len(chunks)} {method} chapters{ai_provider}...")
                 progress_bar.progress(0.6)
                 
                 chapter_titles = []
@@ -187,7 +203,9 @@ if generate_button and (video_url or demo_mode):
                 progress_bar.empty()
                 
                 # Display results
-                success_msg = f"🎉 Successfully generated {len(chunks)} chapters using {method} generation!"
+                success_msg = f"🎉 Successfully generated {len(chapter_titles)} chapters using {method} generation!"
+                if method_type == "premium":
+                    success_msg += " 🤖 (Powered by FREE Gemini AI)"
                 st.success(success_msg)
                 
                 # Tabs for different views
@@ -269,6 +287,11 @@ if generate_button and (video_url or demo_mode):
                     st.write(f"- Mode: {method_desc}")
                     st.write(f"- Words per chapter: {max_words}")
                     st.write(f"- Total chapters generated: {len(chapter_titles)}")
+                    
+                    if method_type == "premium":
+                        st.markdown("**🤖 AI Provider:**")
+                        st.success("Google Gemini 1.5 Flash (FREE)")
+                        st.info("Enjoying unlimited AI-powered chapters at no cost!")
         
         except Exception as e:
             progress_bar.empty()
@@ -292,14 +315,14 @@ with col1:
 with col2:
     st.markdown("**💻 Tech Stack:**")
     st.markdown("- Streamlit")
-    st.markdown("- OpenAI API (optional)")
+    st.markdown("- Google Gemini API (FREE)")
     st.markdown("- YouTube Transcript API")
 
 with col3:
     st.markdown("**📋 Status:**")
     method_type, method_desc = get_summarization_status()
     st.markdown(f"- Mode: {method_type.title()}")
-    st.markdown(f"- API: {'✅ Configured' if OPENAI_CONFIGURED else '💡 Free mode'}")
-    st.markdown("- Version: 1.0.0")
+    st.markdown(f"- API: {'🤖 Gemini (Free)' if GEMINI_CONFIGURED else '💡 Free mode'}")
+    st.markdown("- Version: 2.0.0")
 
-st.markdown("<div style='text-align: center; margin-top: 2rem;'><em>Built with ❤️ for content creators</em></div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center; margin-top: 2rem;'><em>Built with ❤️ using FREE Google Gemini AI</em></div>", unsafe_allow_html=True)
